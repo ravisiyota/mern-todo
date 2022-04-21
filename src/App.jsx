@@ -1,15 +1,15 @@
 const contentNode = document.getElementById('contents');
-const todos = [
-    {
-        "todoId": 1,
-        "todoTitle": "Learn React"
+// const todos = [
+//     {
+//         "todoId": 1,
+//         "todoTitle": "Learn React"
 
-    },
-    {
-        "todoId": 2,
-        "todoTitle": "Learn Express"
-    }
-];
+//     },
+//     {
+//         "todoId": 2,
+//         "todoTitle": "Learn Express"
+//     }
+// ];
 
 class TodoFilter extends React.Component {
     render() {
@@ -53,23 +53,65 @@ class TodoTable extends React.Component {
 }
 
 class TodoAdd extends React.Component {
+    constructor() {
+        super();
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        const form = document.forms.todoAdd;
+        this.props.createTodo({
+            todoTitle: form.title.value
+        });
+        form.title.value = "";
+    }
+
     render() {
         return (
-            <div>This is placeholder for Todo Add.</div>
+            <div>
+                <form name="todoAdd" onSubmit={this.handleSubmit}>
+                    <input type="text" name="title" id="title" />
+                    <button>Add</button>
+                </form>
+            </div>
         );
     }
 }
 
 class TodoList extends React.Component {
+    constructor() {
+        super();
+        this.state = { todos: [] };
+        this.createTodo = this.createTodo.bind(this);
+    }
+
+    componentDidMount() {
+        this.loadTodos();
+    }
+
+    loadTodos() {
+        setTimeout(() => {
+            this.setState({ todos: todos }, 500);
+        });
+    }
+
+    createTodo(newTodo) {
+        const newTodos = this.state.todos.slice();
+        newTodo.todoId = this.state.todos.length + 1;
+        newTodos.push(newTodo);
+        this.setState({ todos: newTodos });
+    }
+
     render() {
         return (
             <div>
                 <h1>Todo List</h1>
                 <TodoFilter />
                 <hr />
-                <TodoTable todos={todos} />
+                <TodoTable todos={this.state.todos} />
                 <hr />
-                <TodoAdd />
+                <TodoAdd createTodo={this.createTodo} />
             </div>
         );
     }

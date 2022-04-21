@@ -9,14 +9,17 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var contentNode = document.getElementById('contents');
-var todos = [{
-    "todoId": 1,
-    "todoTitle": "Learn React"
+// const todos = [
+//     {
+//         "todoId": 1,
+//         "todoTitle": "Learn React"
 
-}, {
-    "todoId": 2,
-    "todoTitle": "Learn Express"
-}];
+//     },
+//     {
+//         "todoId": 2,
+//         "todoTitle": "Learn Express"
+//     }
+// ];
 
 var TodoFilter = function (_React$Component) {
     _inherits(TodoFilter, _React$Component);
@@ -130,16 +133,38 @@ var TodoAdd = function (_React$Component4) {
     function TodoAdd() {
         _classCallCheck(this, TodoAdd);
 
-        return _possibleConstructorReturn(this, (TodoAdd.__proto__ || Object.getPrototypeOf(TodoAdd)).apply(this, arguments));
+        var _this4 = _possibleConstructorReturn(this, (TodoAdd.__proto__ || Object.getPrototypeOf(TodoAdd)).call(this));
+
+        _this4.handleSubmit = _this4.handleSubmit.bind(_this4);
+        return _this4;
     }
 
     _createClass(TodoAdd, [{
+        key: "handleSubmit",
+        value: function handleSubmit(e) {
+            e.preventDefault();
+            var form = document.forms.todoAdd;
+            this.props.createTodo({
+                todoTitle: form.title.value
+            });
+            form.title.value = "";
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
                 "div",
                 null,
-                "This is placeholder for Todo Add."
+                React.createElement(
+                    "form",
+                    { name: "todoAdd", onSubmit: this.handleSubmit },
+                    React.createElement("input", { type: "text", name: "title", id: "title" }),
+                    React.createElement(
+                        "button",
+                        null,
+                        "Add"
+                    )
+                )
             );
         }
     }]);
@@ -153,10 +178,36 @@ var TodoList = function (_React$Component5) {
     function TodoList() {
         _classCallCheck(this, TodoList);
 
-        return _possibleConstructorReturn(this, (TodoList.__proto__ || Object.getPrototypeOf(TodoList)).apply(this, arguments));
+        var _this5 = _possibleConstructorReturn(this, (TodoList.__proto__ || Object.getPrototypeOf(TodoList)).call(this));
+
+        _this5.state = { todos: [] };
+        _this5.createTodo = _this5.createTodo.bind(_this5);
+        return _this5;
     }
 
     _createClass(TodoList, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.loadTodos();
+        }
+    }, {
+        key: "loadTodos",
+        value: function loadTodos() {
+            var _this6 = this;
+
+            setTimeout(function () {
+                _this6.setState({ todos: todos }, 500);
+            });
+        }
+    }, {
+        key: "createTodo",
+        value: function createTodo(newTodo) {
+            var newTodos = this.state.todos.slice();
+            newTodo.todoId = this.state.todos.length + 1;
+            newTodos.push(newTodo);
+            this.setState({ todos: newTodos });
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
@@ -169,9 +220,9 @@ var TodoList = function (_React$Component5) {
                 ),
                 React.createElement(TodoFilter, null),
                 React.createElement("hr", null),
-                React.createElement(TodoTable, { todos: todos }),
+                React.createElement(TodoTable, { todos: this.state.todos }),
                 React.createElement("hr", null),
-                React.createElement(TodoAdd, null)
+                React.createElement(TodoAdd, { createTodo: this.createTodo })
             );
         }
     }]);
